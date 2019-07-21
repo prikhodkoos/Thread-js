@@ -28,18 +28,17 @@ export const getPost = async (id) => {
 };
 
 
-export const likePost = async (postId) => {
+export const likePost = async (postId, isLike) => {
     const response = await callWebApi({
         endpoint: '/api/posts/react',
         type: 'PUT',
         request: {
             postId,
-            isLike: true
+            isLike
         }
     });
     return response.json();
 };
-
 
 // should be replaced by approppriate function
 export const getPostByHash = async hash => getPost(hash);

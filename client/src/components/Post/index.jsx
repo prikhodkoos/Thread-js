@@ -35,11 +35,11 @@ const Post = ({ post, likePost, toggleExpandedPost, sharePost }) => {
                 </Card.Description>
             </Card.Content>
             <Card.Content extra>
-                <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => likePost(id)}>
+                <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => likePost(id, true)}>
                     <Icon name="thumbs up" />
                     {likeCount}
                 </Label>
-                <Label basic size="small" as="a" className={styles.toolbarBtn}>
+                <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => likePost(id, false)}>
                     <Icon name="thumbs down" />
                     {dislikeCount}
                 </Label>
