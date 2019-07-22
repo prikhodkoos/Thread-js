@@ -1,6 +1,7 @@
 import sequelize from '../db/connection';
 import { PostModel, CommentModel, UserModel, ImageModel, PostReactionModel } from '../models/index';
 import BaseRepository from './base.repository';
+const op = require('sequelize').Op;
 
 const likeCase = bool => `CASE WHEN "postReactions"."isLike" = ${bool} THEN 1 ELSE 0 END`;
 
@@ -9,13 +10,17 @@ class PostRepository extends BaseRepository {
         const {
             from: offset,
             count: limit,
-            userId
+            userId,
+            isReverse
         } = filter;
 
         const where = {};
         if (userId) {
-            Object.assign(where, { userId });
+            isReverse === 'true'
+                ? Object.assign(where, { userId: {[op.ne]: userId} })
+                : Object.assign(where, { userId });
         }
+        console.log(where);
     
         where.isArchived = false;
 
