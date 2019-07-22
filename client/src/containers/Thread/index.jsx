@@ -26,6 +26,7 @@ class Thread extends React.Component {
         this.postsFilter = {
             userId: undefined,
             isReverse: undefined,
+            type: undefined,
             from: 0,
             count: 10
         };
@@ -35,11 +36,12 @@ class Thread extends React.Component {
         switch (type) {
             case 'showOwnPosts':
                 this.setState(
-                    ({ showOwnPosts }) => ({ showOwnPosts: !showOwnPosts, notShowOwnPosts: false }),
+                    ({ showOwnPosts }) => ({ showOwnPosts: !showOwnPosts, notShowOwnPosts: false, showArchivedPosts: false }),
                     () => {
                         Object.assign(this.postsFilter, {
                             userId: this.state.showOwnPosts ? this.props.userId : undefined,
                             isReverse: false,
+                            type: undefined,
                             from: 0
                         });
                         console.log(this.postsFilter);
@@ -51,11 +53,28 @@ class Thread extends React.Component {
                 break;
             case 'notShowOwnPosts':
                 this.setState(
-                    ({ notShowOwnPosts }) => ({ notShowOwnPosts: !notShowOwnPosts,showOwnPosts: false }),
+                    ({ notShowOwnPosts }) => ({ notShowOwnPosts: !notShowOwnPosts,showOwnPosts: false, showArchivedPosts: false }),
                     () => {
                         Object.assign(this.postsFilter, {
                             userId: this.state.notShowOwnPosts ? this.props.userId : undefined,
                             isReverse: true,
+                            type: undefined,
+                            from: 0
+                        });
+                        console.log(this.postsFilter);
+                        this.props.loadPosts(this.postsFilter);
+                        this.postsFilter.from = this.postsFilter.count; // for next scroll
+                    }
+                );
+                break;
+            case 'showArchivedPosts':
+                this.setState(
+                    ({ showArchivedPosts }) => ({ showArchivedPosts: !showArchivedPosts, showOwnPosts: false, notShowOwnPosts: false }),
+                    () => {
+                        Object.assign(this.postsFilter, {
+                            userId: this.state.showArchivedPosts ? this.props.userId : undefined,
+                            isReverse: undefined,
+                            type: this.state.showArchivedPosts ? 'archived' : undefined,
                             from: 0
                         });
                         console.log(this.postsFilter);
@@ -88,17 +107,39 @@ class Thread extends React.Component {
 
     render() {
         const { posts = [], expandedPost, hasMorePosts, ...props } = this.props;
-        const { showOwnPosts, notShowOwnPosts, sharedPostId } = this.state;
+        const { showOwnPosts, notShowOwnPosts, showlikedPosts, showArchivedPosts, sharedPostId } = this.state;
         return (
             <div className={styles.threadContent}>
                 <div className={styles.addPostForm}>
                     <AddPost addPost={props.addPost} uploadImage={this.uploadImage} />
                 </div>
                 <div className={styles.toolbar}>
-                    <Checkbox toggle label="Show only my posts" checked={showOwnPosts} onChange={() => this.tooglePosts('showOwnPosts')} />
+                    <Checkbox toggle 
+                        label="Show only my posts" 
+                        checked={showOwnPosts} 
+                        onChange={() => this.tooglePosts('showOwnPosts')} 
+                    />
                 </div>
                 <div className={styles.toolbar}>
-                    <Checkbox toggle label="Do not show my posts" checked={notShowOwnPosts} onChange={() => this.tooglePosts('notShowOwnPosts')} />
+                    <Checkbox toggle 
+                        label="Do not show my posts" 
+                        checked={notShowOwnPosts} 
+                        onChange={() => this.tooglePosts('notShowOwnPosts')} 
+                    />
+                </div>
+                <div className={styles.toolbar}>
+                    <Checkbox toggle 
+                        label="Show only liked posts" 
+                        checked={showlikedPosts} 
+                        onChange={() => this.tooglePosts('showlikedPosts')} 
+                    />
+                </div>
+                <div className={styles.toolbar}>
+                    <Checkbox toggle 
+                        label="Show only archived posts" 
+                        checked={showArchivedPosts} 
+                        onChange={() => this.tooglePosts('showArchivedPosts')} 
+                    />
                 </div>
                 <InfiniteScroll
                     pageStart={0}

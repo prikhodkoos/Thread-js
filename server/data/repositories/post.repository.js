@@ -11,18 +11,21 @@ class PostRepository extends BaseRepository {
             from: offset,
             count: limit,
             userId,
-            isReverse
+            isReverse,
+            type
         } = filter;
 
         const where = {};
+
         if (userId) {
             isReverse === 'true'
                 ? Object.assign(where, { userId: {[op.ne]: userId} })
                 : Object.assign(where, { userId });
         }
-        console.log(where);
     
-        where.isArchived = false;
+        type === 'archived'
+            ? Object.assign(where, { isArchived: true, userId })
+            : Object.assign(where, { isArchived: false })
 
         return this.model.findAll({
             where,
