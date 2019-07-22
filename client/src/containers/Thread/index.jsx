@@ -9,7 +9,7 @@ import AddPost from 'src/components/AddPost';
 import SharedPostLink from 'src/components/SharedPostLink';
 import { Checkbox, Loader } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
-import { loadPosts, loadMorePosts, likePost, toggleExpandedPost, addPost } from './actions';
+import { loadPosts, loadMorePosts, likePost, archivePost, toggleExpandedPost, addPost } from './actions';
 
 import styles from './styles.module.scss';
 
@@ -75,14 +75,18 @@ class Thread extends React.Component {
                     loader={<Loader active inline="centered" key={0} />}
                 >
                     {posts.map(post => (
-                        <Post
-                            post={post}
-                            likePost={props.likePost}
-                            toggleExpandedPost={props.toggleExpandedPost}
-                            sharePost={this.sharePost}
-                            key={post.id}
-                        />
-                    ))}
+                            <Post
+                                post={post}
+                                likePost={props.likePost}
+                                archivePost={post.userId === this.props.userId
+                                    ? props.archivePost
+                                    : undefined }
+                                toggleExpandedPost={props.toggleExpandedPost}
+                                sharePost={this.sharePost}
+                                key={post.id}
+                            />
+                        )
+                    )}
                 </InfiniteScroll>
                 {
                     expandedPost
@@ -129,6 +133,7 @@ const actions = {
     loadPosts,
     loadMorePosts,
     likePost,
+    archivePost,
     toggleExpandedPost,
     addPost
 };

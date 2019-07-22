@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import styles from './styles.module.scss';
 
-const Post = ({ post, likePost, toggleExpandedPost, sharePost }) => {
+const Post = ({ post, likePost, archivePost, toggleExpandedPost, sharePost }) => {
     const {
         id,
         image,
@@ -50,6 +50,12 @@ const Post = ({ post, likePost, toggleExpandedPost, sharePost }) => {
                 <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => sharePost(id)}>
                     <Icon name="share alternate" />
                 </Label>
+                {
+                    archivePost && 
+                    <Label basic size="small" as="a" className={styles.toolbarBtn} style={{float:'right'}} onClick={() => archivePost(id)}>
+                        <Icon name="archive" />
+                    </Label>
+                }
             </Card.Content>
         </Card>
     );

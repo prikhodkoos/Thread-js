@@ -75,6 +75,10 @@ export const likePost = (postId, isLike) => async (dispatch, getRootState) => {
     }
 };
 
+export const archivePost = postId => async (dispatch, getRootState) => {
+    
+}
+
 export const addComment = request => async (dispatch, getRootState) => {
     const { id } = await commentService.addComment(request);
     const comment = await commentService.getComment(id);
