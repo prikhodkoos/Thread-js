@@ -16,6 +16,8 @@ class PostRepository extends BaseRepository {
         if (userId) {
             Object.assign(where, { userId });
         }
+    
+        where.isArchived = false;
 
         return this.model.findAll({
             where,

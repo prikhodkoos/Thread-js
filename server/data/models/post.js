@@ -5,7 +5,11 @@ export default (orm, DataTypes) => {
             type: DataTypes.TEXT
         },
         createdAt: DataTypes.DATE,
-        updatedAt: DataTypes.DATE
+        updatedAt: DataTypes.DATE,
+        isArchived: {
+            allowNull: false,
+            type: DataTypes.BOOLEAN
+        }
     }, {});
 
     return Post;

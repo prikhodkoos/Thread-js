@@ -42,12 +42,8 @@ export const likePost = async (postId, isLike) => {
 
 export const archivePost = async (postId) => {
     const response = await callWebApi({
-        endpoint: '/api/posts',
+        endpoint: `/api/posts/${postId}`,
         type: 'PUT',
-        request: {
-            postId,
-            isArchive: true
-        }
     });
     return response.json();
 }

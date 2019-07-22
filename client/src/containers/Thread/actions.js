@@ -76,7 +76,16 @@ export const likePost = (postId, isLike) => async (dispatch, getRootState) => {
 };
 
 export const archivePost = postId => async (dispatch, getRootState) => {
-    
+    const response = await postService.archivePost(postId);
+    if (response.id) {
+        const { posts: { posts } } = getRootState();
+        const updated = posts.filter(post => post.id !== postId);
+        dispatch(setPostsAction(updated));
+    } else {
+        console.log('unarchived');
+        // const posts = await postService.getAllPosts(filter); no filter
+        // dispatch(setPostsAction(posts));
+    }
 }
 
 export const addComment = request => async (dispatch, getRootState) => {
