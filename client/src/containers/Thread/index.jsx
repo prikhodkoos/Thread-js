@@ -36,7 +36,7 @@ class Thread extends React.Component {
         switch (type) {
             case 'showOwnPosts':
                 this.setState(
-                    ({ showOwnPosts }) => ({ showOwnPosts: !showOwnPosts, notShowOwnPosts: false, showArchivedPosts: false }),
+                    ({ showOwnPosts }) => ({ showOwnPosts: !showOwnPosts, notShowOwnPosts: false, showArchivedPosts: false, showlikedPosts: false }),
                     () => {
                         Object.assign(this.postsFilter, {
                             userId: this.state.showOwnPosts ? this.props.userId : undefined,
@@ -44,8 +44,6 @@ class Thread extends React.Component {
                             type: undefined,
                             from: 0
                         });
-                        console.log(this.postsFilter);
-
                         this.props.loadPosts(this.postsFilter);
                         this.postsFilter.from = this.postsFilter.count; // for next scroll
                     }
@@ -53,7 +51,7 @@ class Thread extends React.Component {
                 break;
             case 'notShowOwnPosts':
                 this.setState(
-                    ({ notShowOwnPosts }) => ({ notShowOwnPosts: !notShowOwnPosts,showOwnPosts: false, showArchivedPosts: false }),
+                    ({ notShowOwnPosts }) => ({ notShowOwnPosts: !notShowOwnPosts,showOwnPosts: false, showArchivedPosts: false, showlikedPosts: false }),
                     () => {
                         Object.assign(this.postsFilter, {
                             userId: this.state.notShowOwnPosts ? this.props.userId : undefined,
@@ -61,7 +59,6 @@ class Thread extends React.Component {
                             type: undefined,
                             from: 0
                         });
-                        console.log(this.postsFilter);
                         this.props.loadPosts(this.postsFilter);
                         this.postsFilter.from = this.postsFilter.count; // for next scroll
                     }
@@ -69,7 +66,7 @@ class Thread extends React.Component {
                 break;
             case 'showArchivedPosts':
                 this.setState(
-                    ({ showArchivedPosts }) => ({ showArchivedPosts: !showArchivedPosts, showOwnPosts: false, notShowOwnPosts: false }),
+                    ({ showArchivedPosts }) => ({ showArchivedPosts: !showArchivedPosts, showOwnPosts: false, notShowOwnPosts: false, showlikedPosts: false }),
                     () => {
                         Object.assign(this.postsFilter, {
                             userId: this.state.showArchivedPosts ? this.props.userId : undefined,
@@ -77,7 +74,21 @@ class Thread extends React.Component {
                             type: this.state.showArchivedPosts ? 'archived' : undefined,
                             from: 0
                         });
-                        console.log(this.postsFilter);
+                        this.props.loadPosts(this.postsFilter);
+                        this.postsFilter.from = this.postsFilter.count; // for next scroll
+                    }
+                );
+                break;
+            case 'showlikedPosts':
+                this.setState(
+                    ({ showlikedPosts }) => ({ showlikedPosts: !showlikedPosts, showOwnPosts: false, notShowOwnPosts: false, showArchivedPosts: false }),
+                    () => {
+                        Object.assign(this.postsFilter, {
+                            userId: this.state.showlikedPosts ? this.props.userId : undefined,
+                            isReverse: undefined,
+                            type: this.state.showlikedPosts ? 'liked' : undefined,
+                            from: 0
+                        });
                         this.props.loadPosts(this.postsFilter);
                         this.postsFilter.from = this.postsFilter.count; // for next scroll
                     }

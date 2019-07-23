@@ -18,14 +18,17 @@ class PostRepository extends BaseRepository {
         const where = {};
 
         if (userId) {
-            isReverse === 'true'
-                ? Object.assign(where, { userId: {[op.ne]: userId} })
-                : Object.assign(where, { userId });
+            if (isReverse === 'true') Object.assign(where, { userId: {[op.ne]: userId} });
+            if (isReverse === 'false') Object.assign(where, { userId });
         }
     
         type === 'archived'
             ? Object.assign(where, { isArchived: true, userId })
-            : Object.assign(where, { isArchived: false })
+            : Object.assign(where, { isArchived: false });
+
+        const reactionWhere = {};
+        
+        if (type === 'liked') Object.assign(reactionWhere, { isLike: true, userId });
 
         return this.model.findAll({
             where,
@@ -51,6 +54,7 @@ class PostRepository extends BaseRepository {
                 }
             }, {
                 model: PostReactionModel,
+                where: reactionWhere,
                 attributes: [],
                 duplicating: false
             }],
