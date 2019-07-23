@@ -19,6 +19,10 @@ const Post = ({ post, likePost, archivePost, toggleExpandedPost, sharePost }) =>
         createdAt
     } = post;
     const date = moment(createdAt).fromNow();
+    let likersDiv, dislikersDiv;
+    if (likers) likersDiv = <div className='users'>{likers.join(', ')}</div>;
+    if (dislikers) dislikersDiv = <div className='users dis'>{dislikers.join(', ')}</div>;
+
     return (
         <Card style={{ width: '100%' }}>
             {image && <Image src={image.link} wrapped ui={false} />}
@@ -41,12 +45,12 @@ const Post = ({ post, likePost, archivePost, toggleExpandedPost, sharePost }) =>
                     <Icon name="thumbs up" />
                     {likeCount}
                 </Label>
-                <div className='users'>{likers.join(', ')}</div>
+                {likersDiv}
                 <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => likePost(id, false)}>
                     <Icon name="thumbs down" />
                     {dislikeCount}
                 </Label>
-                <div className='users dis'>{dislikers.join(', ')}</div>
+                {dislikersDiv}
                 <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => toggleExpandedPost(id)}>
                     <Icon name="comment" />
                     {commentCount}

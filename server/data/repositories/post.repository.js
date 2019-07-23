@@ -31,7 +31,7 @@ class PostRepository extends BaseRepository {
         const reactionWhere = {};
 
         if (type === 'liked') Object.assign(reactionWhere, { isLike: true, userId });
-
+        
         const posts =  this.model.findAll({
             where,
             attributes: {

@@ -61,6 +61,7 @@ export const likePost = (postId, isLike) => async (dispatch, getRootState) => {
     const { like, dislike } = diff;
 
     const changeLikers = (likers, like) => {
+        if (likers === undefined) return [];
         if (like === 1) {
             return [...likers, username];
         }
