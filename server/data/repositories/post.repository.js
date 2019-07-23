@@ -1,6 +1,9 @@
 import sequelize from '../db/connection';
 import { PostModel, CommentModel, UserModel, ImageModel, PostReactionModel } from '../models/index';
 import BaseRepository from './base.repository';
+import postReactionRepository from './post-reaction.repository';
+import userRepository from './user.repository';
+const op = require('sequelize').Op;
 
 const likeCase = bool => `CASE WHEN "postReactions"."isLike" = ${bool} THEN 1 ELSE 0 END`;
 
@@ -9,15 +12,27 @@ class PostRepository extends BaseRepository {
         const {
             from: offset,
             count: limit,
-            userId
+            userId,
+            isReverse,
+            type
         } = filter;
 
         const where = {};
-        if (userId) {
-            Object.assign(where, { userId });
-        }
 
-        return this.model.findAll({
+        if (userId) {
+            if (isReverse === 'true') Object.assign(where, { userId: {[op.ne]: userId} });
+            if (isReverse === 'false') Object.assign(where, { userId });
+        }
+    
+        type === 'archived'
+            ? Object.assign(where, { isArchived: true, userId })
+            : Object.assign(where, { isArchived: false });
+
+        const reactionWhere = {};
+
+        if (type === 'liked') Object.assign(reactionWhere, { isLike: true, userId });
+        
+        const posts =  this.model.findAll({
             where,
             attributes: {
                 include: [
@@ -41,6 +56,7 @@ class PostRepository extends BaseRepository {
                 }
             }, {
                 model: PostReactionModel,
+                where: reactionWhere,
                 attributes: [],
                 duplicating: false
             }],
@@ -54,6 +70,26 @@ class PostRepository extends BaseRepository {
             offset,
             limit
         });
+        const extendedPosts = posts.map(async post => {
+            const reactionsLike = await postReactionRepository.getPostReactors(post.id, true);
+            
+            const likers = await Promise.all(reactionsLike.map(async reaction => {
+                const user = await userRepository.getById(reaction.dataValues.userId);
+                return user.username;
+            }));
+
+            const reactionsDislike = await postReactionRepository.getPostReactors(post.id, false);
+            
+            const dislikers = await Promise.all(reactionsDislike.map(async reaction => {
+                const user = await userRepository.getById(reaction.dataValues.userId);
+                return user.username;
+            }));
+            
+            Object.assign(post.dataValues, {likers, dislikers});
+
+            return post;
+        });
+        return extendedPosts;
     }
 
     getPostById(id) {

@@ -24,6 +24,9 @@ router
             }
             return res.send(reaction);
         })
+        .catch(next))
+    .put('/:id', (req, res, next) => postService.archivePost(req.params.id)
+        .then(id => res.send(id))
         .catch(next));
 
 export default router;

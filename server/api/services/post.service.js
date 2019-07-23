@@ -1,5 +1,6 @@
 import postRepository from '../../data/repositories/post.repository';
 import postReactionRepository from '../../data/repositories/post-reaction.repository';
+import userRepository from '../../data/repositories/user.repository';
 
 export const getPosts = filter => postRepository.getPosts(filter);
 
@@ -7,7 +8,8 @@ export const getPostById = id => postRepository.getPostById(id);
 
 export const create = (userId, post) => postRepository.create({
     ...post,
-    userId
+    userId,
+    isArchived: false
 });
 
 export const setReaction = async (userId, { postId, isLike = true }) => {
@@ -22,6 +24,28 @@ export const setReaction = async (userId, { postId, isLike = true }) => {
         ? await updateOrDelete(reaction)
         : await postReactionRepository.create({ userId, postId, isLike });
 
+        const diff = reaction
+            ? reaction.isLike
+                ? { like: -1, dislike: isLike ? 0 : 1 }
+                : { like: isLike ? 1 : 0, dislike: -1 }
+            : { like: isLike ? 1 : 0, dislike: isLike ? 0 : 1 };
+
+        const user = await userRepository.getUserById(userId);
+        const username = user.dataValues.username;
+
     // the result is an integer when an entity is deleted
-    return Number.isInteger(result) ? {} : postReactionRepository.getPostReaction(userId, postId);
+    return Number.isInteger(result) ? {diff, username} : {diff: {...postReactionRepository.getPostReaction(userId, postId), ...diff }, username};
+};
+
+export const archivePost = async id => {
+    try {
+        const result = await postRepository.getPostById(id);
+        const isArchived = result.dataValues.isArchived
+        await postRepository.updateById(id, { isArchived: !isArchived });
+    
+        return isArchived ? isArchived : { id };
+    } catch (err) {
+        console.log(err); 
+        return err;
+    }
 };
