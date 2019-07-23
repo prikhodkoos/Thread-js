@@ -1,5 +1,6 @@
 import postRepository from '../../data/repositories/post.repository';
 import postReactionRepository from '../../data/repositories/post-reaction.repository';
+import userRepository from '../../data/repositories/user.repository';
 
 export const getPosts = filter => postRepository.getPosts(filter);
 
@@ -29,8 +30,11 @@ export const setReaction = async (userId, { postId, isLike = true }) => {
                 : { like: isLike ? 1 : 0, dislike: -1 }
             : { like: isLike ? 1 : 0, dislike: isLike ? 0 : 1 };
 
+        const user = await userRepository.getUserById(userId);
+        const username = user.dataValues.username;
+
     // the result is an integer when an entity is deleted
-    return Number.isInteger(result) ? diff : {...postReactionRepository.getPostReaction(userId, postId), ...diff };
+    return Number.isInteger(result) ? {diff, username} : {diff: {...postReactionRepository.getPostReaction(userId, postId), ...diff }, username};
 };
 
 export const archivePost = async id => {

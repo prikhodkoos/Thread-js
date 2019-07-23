@@ -57,10 +57,23 @@ export const toggleExpandedPost = postId => async (dispatch) => {
 };
 
 export const likePost = (postId, isLike) => async (dispatch, getRootState) => {
-    const { like, dislike } = await postService.likePost(postId, isLike);
+    const { diff, username } = await postService.likePost(postId, isLike);
+    const { like, dislike } = diff;
 
+    const changeLikers = (likers, like) => {
+        if (like === 1) {
+            return [...likers, username];
+        }
+        if (like === -1) {
+            return likers.filter(liker => liker !== username)
+        }
+        return likers;
+    }
+    
     const mapLikes = post => ({
         ...post,
+        likers: changeLikers(post.likers, like),
+        dislikers: changeLikers(post.dislikers, dislike),
         likeCount: Number(post.likeCount) + like,
         dislikeCount: Number(post.dislikeCount) + dislike 
     });

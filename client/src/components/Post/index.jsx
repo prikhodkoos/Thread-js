@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, Image, Label, Icon } from 'semantic-ui-react';
 import moment from 'moment';
-
+import './post.css';
 import styles from './styles.module.scss';
 
 const Post = ({ post, likePost, archivePost, toggleExpandedPost, sharePost }) => {
@@ -13,6 +13,8 @@ const Post = ({ post, likePost, archivePost, toggleExpandedPost, sharePost }) =>
         user,
         likeCount,
         dislikeCount,
+        likers,
+        dislikers,
         commentCount,
         createdAt
     } = post;
@@ -39,10 +41,12 @@ const Post = ({ post, likePost, archivePost, toggleExpandedPost, sharePost }) =>
                     <Icon name="thumbs up" />
                     {likeCount}
                 </Label>
+                <div className='users'>{likers.join(', ')}</div>
                 <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => likePost(id, false)}>
                     <Icon name="thumbs down" />
                     {dislikeCount}
                 </Label>
+                <div className='users dis'>{dislikers.join(', ')}</div>
                 <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => toggleExpandedPost(id)}>
                     <Icon name="comment" />
                     {commentCount}
